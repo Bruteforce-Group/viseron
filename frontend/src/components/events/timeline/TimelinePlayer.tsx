@@ -122,6 +122,8 @@ const initializePlayer = (
     backBufferLength: 15, // 15 seconds of back buffer
     liveSyncDurationCount: 1,
     liveDurationInfinity: true,
+    debug: true,
+    forceKeyFrameOnDiscontinuity: false,
     async xhrSetup(xhr, _url) {
       xhr.withCredentials = true;
       if (auth.enabled) {
@@ -154,12 +156,14 @@ const initializePlayer = (
 
   // Handle errors
   hlsRef.current.on(Hls.Events.ERROR, (_event, data) => {
+    console.log("HLS.js error", data);
     if (data.fatal) {
       switch (data.type) {
         case Hls.ErrorTypes.NETWORK_ERROR:
           hlsRef.current!.startLoad();
           break;
         case Hls.ErrorTypes.MEDIA_ERROR:
+          console.log("Attempting recovery");
           hlsRef.current!.recoverMediaError();
           break;
         default:
